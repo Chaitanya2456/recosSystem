@@ -1,0 +1,49 @@
+<!--This is the html for extension pop-up page-->
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Recently Watched</title>
+	<style type="">
+		body {min-width: 250px;
+		background-color: rgb(21, 21, 24);
+		}
+        ::-webkit-scrollbar { width: 8px; height: 3px;}
+::-webkit-scrollbar-button {  background-color: #666; }
+::-webkit-scrollbar-track {  background-color: #646464;}
+::-webkit-scrollbar-track-piece { background-color: #000;}
+::-webkit-scrollbar-thumb { height: 20px; background-color: #666; border-radius: 3px;}
+::-webkit-scrollbar-corner { background-color: #646464;}
+::-webkit-resizer { background-color: #666;}
+
+		h2 {
+			color: azure;
+		}
+		.container { display: flex;
+		overflow-x: auto;
+		max-width: 400px;
+		}
+		.container img { 
+			margin-right: 10px;
+		}
+	</style>
+	 <script src="popup.js"></script>
+</head>
+<body>
+  <h2>Recently Watched</h2>
+  <!--
+  <div id="typedUrl_div">
+  	<ul id="title_list">
+  	</ul>
+  </div>-->
+
+  <div class="container" id="watch_list"></div>
+  <br>
+  <h2>Suggested TV for you</h2>
+  <div class="container" id="tv_rec_list"></div>
+  <br>
+  <h2>Suggested Movies for you</h2>
+  <div class="container" id="movie_rec_list"></div>
+</body>
+
+</html>
