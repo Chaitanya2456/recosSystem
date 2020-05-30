@@ -30,13 +30,22 @@ function onAnchorClick(event) {
 }*/
 function populateTitles(data){
 	var cont = document.getElementById("watch_list");
+	console.log("populating titles");
 	for(var i=0;i<data.length;i++){
 		var a = document.createElement('a');
 		a.href = "#";
 		a.className = "item";
+		//console.log("from storage "+data[i].key_title);
+		let info = data[i];
+		a.addEventListener('click', function() {
+			chrome.runtime.sendMessage({
+				msg: "new tab for watched titles",
+				data: info
+			});
+		});
 		var img = document.createElement('img');
-		img.src = 'https://image.tmdb.org/t/p/w92' + data[i].title_val.Data.poster_path;
-		img.className = "img_item";
+		img.dataset.src = 'https://image.tmdb.org/t/p/w92' + data[i].title_val.Data.poster_path;
+		img.className = "lazy";
 		a.appendChild(img);
 		cont.appendChild(a);
 	}
@@ -46,9 +55,21 @@ function populateTitles(data){
 function populateTvRecs(data){
 	var cont = document.getElementById("tv_rec_list");
 	for(var i=0;i<data.length;i++){
+		var a = document.createElement('a');
+		a.href = "#";
+		a.className = "item";
+		let info = data[i];
+		a.addEventListener('click', function() {
+			chrome.runtime.sendMessage({
+				msg: "new tab for tv recos",
+				data: info
+			});
+		});
 		var img = document.createElement('img');
-		img.src = 'https://image.tmdb.org/t/p/w92' + data[i].title_val.recoData.poster_path;
-		cont.appendChild(img);
+		img.dataset.src = 'https://image.tmdb.org/t/p/w92' + data[i].title_val.recoData.poster_path;
+		img.className = "lazy";
+		a.appendChild(img);
+		cont.appendChild(a);
 	}
 
 }
@@ -56,9 +77,21 @@ function populateTvRecs(data){
 function populateMovieRecs(data){
 	var cont = document.getElementById("movie_rec_list");
 	for(var i=0;i<data.length;i++){
+		var a = document.createElement('a');
+		a.href = "#";
+		a.className = "item";
+		let info = data[i];
+		a.addEventListener('click', function() {
+			chrome.runtime.sendMessage({
+				msg: "new tab for movie recos",
+				data: info
+			});
+		});
 		var img = document.createElement('img');
-		img.src = 'https://image.tmdb.org/t/p/w92' + data[i].title_val.recoData.poster_path;
-		cont.appendChild(img);
+		img.dataset.src = 'https://image.tmdb.org/t/p/w92' + data[i].title_val.recoData.poster_path;
+		img.className = "lazy";
+		a.appendChild(img)
+		cont.appendChild(a);
 	}
 
 }
@@ -105,6 +138,29 @@ chrome.history.onVisited.addListener(function(result){
 document.addEventListener('DOMContentLoaded', function () {
 	console.log("created DOM");
   //buildTypedUrlList("typedUrl_div");
+  chrome.storage.local.get("stored_titles", function(data){   // Gets the titles from local storage
+	populateTitles(data.stored_titles); // calls the function for diplaying wathced titles
+	console.log("set list");
+});
+
+chrome.storage.local.get("stored_tv_recos", function(data){   // Gets the titles from local storage
+	var recArr = data.stored_tv_recos;
+	for(var i=0;i<recArr.length;i++){
+		console.log(recArr[i].key_title + " " + recArr[i].title_val.recoData.vote_average + " \n\ ");
+	}
+	populateTvRecs(data.stored_tv_recos);
+
+});
+
+chrome.storage.local.get("stored_movie_recos", function(data){   // Gets the titles from local storage
+	var recArr = data.stored_movie_recos;
+	for(var i=0;i<recArr.length;i++){
+		console.log(recArr[i].key_title + " with rating " + recArr[i].title_val.recoData.vote_average + " and genre is " +movieGenreMap.get(recArr[i].title_val.recoData.genre_ids[0])+ " \n\ ");
+	}
+	populateMovieRecs(data.stored_movie_recos);
+	lazyLoad();
+});
+  
 });
 
 chrome.storage.local.get("tvGenresList", function(data){
@@ -130,29 +186,34 @@ chrome.storage.local.get("tvGenresList", function(data){
  });
 
 
-chrome.storage.local.get("stored_titles", function(data){   // Gets the titles from local storage
-	populateTitles(data.stored_titles); // calls the function for diplaying wathced titles
-	console.log("set list");
-});
 
-chrome.storage.local.get("stored_tv_recos", function(data){   // Gets the titles from local storage
-	var recArr = data.stored_tv_recos;
-	for(var i=0;i<recArr.length;i++){
-		console.log(recArr[i].key_title + " " + recArr[i].title_val.recoData.vote_average + " \n\ ");
-	}
-	populateTvRecs(data.stored_tv_recos);
-
-});
-
-chrome.storage.local.get("stored_movie_recos", function(data){   // Gets the titles from local storage
-	var recArr = data.stored_movie_recos;
-	for(var i=0;i<recArr.length;i++){
-		console.log(recArr[i].key_title + " with rating " + recArr[i].title_val.recoData.vote_average + " and genre is " +movieGenreMap.get(recArr[i].title_val.recoData.genre_ids[0])+ " \n\ ");
-	}
-	populateMovieRecs(data.stored_movie_recos);
-});
 
 chrome.storage.local.get("movieGenresList", function(data){
     console.log(data.movieGenresList);
 });
+
+function lazyLoad() {
+	var lazyImages = [].slice.call(document.querySelectorAll("img.lazy"));
+
+	if("IntersectionObserver" in window) {
+		console.log("observing");
+		let lazyImageObserver = new IntersectionObserver(function(entries, observer) {
+			entries.forEach(function(entry){
+			   if(entry.isIntersecting) {
+				   console.log("starts observing");
+				   let lazyImage = entry.target;
+				   lazyImage.src = lazyImage.dataset.src;
+				   //lazyImage.srcset = lazyImage.dataset.srcset;
+				   lazyImage.classList.remove("lazy");
+				   lazyImageObserver.unobserve(lazyImage);
+			   }
+			});
+		});
+		lazyImages.forEach(function(lazyImage) {
+			lazyImageObserver.observe(lazyImage);
+		});
+	} else {
+		console.log("couldn't apply lazy loading");
+	}
+}
 

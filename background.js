@@ -451,3 +451,38 @@ chrome.runtime.onInstalled.addListener(function() {
 
   });
 
+  let data = null;
+  let type = null;
+
+  chrome.runtime.onMessage.addListener(
+	  function(request, sender, sendResponse) {
+		  if(request.msg === "new tab for watched titles") {
+			data = request.data;
+			//console.log(request.data);
+			type = "watched titles";
+			chrome.tabs.create({url: chrome.extension.getURL('reco_index.html')}, function(tab) {});
+		  }
+
+		  if(request.msg === "new tab for tv recos") {
+			data = request.data;
+			//console.log(request.data);
+			type = "tv recos";
+			chrome.tabs.create({url: chrome.extension.getURL('reco_index.html')}, function(tab) {});
+		  }
+
+		  if(request.msg === "new tab for movie recos") {
+			data = request.data;
+			//console.log(request.data);
+			type = "movie recos";
+			chrome.tabs.create({url: chrome.extension.getURL('reco_index.html')}, function(tab) {});
+		  }
+
+
+
+		  if(request.msg === "ack by new tab") {
+			  //console.log("sent to new tab: " + data);
+			  sendResponse({type: type, data: data});
+		  }
+	  }
+  );
+
