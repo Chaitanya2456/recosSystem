@@ -1,0 +1,16 @@
+{
+	"name": "React type extension",
+	"version": "1.0",
+	"description": "Build an Extension!",
+	"permissions": [ "history", "activeTab", "storage", "tabs", "<all_urls>" ],
+	"background": {
+		"scripts": [ "background.js" ],
+		"persistent": false
+	},
+	
+	"content_security_policy": "script-src 'self' 'sha256-BNPsEbvBULWIvmpccv6m/3OX8Ji4YVnYNVyqrvm1ncU='; object-src 'self'",
+	"browser_action": {
+		"default_popup": "index.html"
+	},
+	"manifest_version": 2
+}
