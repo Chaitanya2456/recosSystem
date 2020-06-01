@@ -18,7 +18,7 @@ const Item = ({ movie }) => (
             "item--open": isActive,
           })}
         >
-          <img src={movie.image} alt="" />
+          <img src={movie.detailsbtn ? movie.imageBg : movie.image} alt="" />
           {movie.detailsbtn && (
             <ShowDetailsButton onClick={() => onSelectSlide(movie)} />
           )}
@@ -31,6 +31,7 @@ const Item = ({ movie }) => (
 
 const handleClick = (movie) => {
   console.log(movie);
+
   if (!movie.detailsbtn) {
     chrome.runtime.sendMessage({
       msg: "go to new tab",
@@ -38,6 +39,26 @@ const handleClick = (movie) => {
       data: movie.data,
     });
   }
+};
+
+const getYoutubeLink = () => {
+  var type = "tv";
+  var id = 1972;
+  var url =
+    "https://api.themoviedb.org/3/" +
+    type +
+    "/" +
+    id +
+    "/videos?api_key=ddda0e20c54495aef2d2b5acce042abe&language=en-US";
+
+  fetch(url)
+    .then((r) => r.text())
+    .then((result) => {
+      const obj = JSON.parse(result);
+      console.log("obj");
+      var iframe = document.getElementById("vid");
+      iframe.src = "https://www.youtube.com/embed/" + obj.results[1].key;
+    });
 };
 
 export default Item;

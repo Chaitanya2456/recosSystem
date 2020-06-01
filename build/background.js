@@ -361,32 +361,6 @@ function fetchMovieRecs(id, mediaTitle) {
     });
 }
 
-//Tried sorting by setting threshold, but did not work in most cases.
-/*
-function fetchMovieRecs(id, genreArr) {
-	var url = "https://api.themoviedb.org/3/movie/"+id+"/recommendations?api_key=ddda0e20c54495aef2d2b5acce042abe&language=en-US&page=1";
-	var threshold = genreArr.length - 2;
-	fetch(url).then(r => r.text()).then(result => {
-		const json = result;
-		const obj = JSON.parse(json);
-		var recArr = obj.results;
-		var filteredArr = [];
-		for(var i=0;i<recArr.length;i++){
-			if(matchedGenres(recArr[i].genre_ids, genreArr)>=threshold){
-				filteredArr.push(recArr[i]);
-			}
-		}
-		filteredArr.sort(function(a, b){
-            return b.vote_average - a.vote_average;
-		});
-		console.log("THE RECOMMENDATIONS ARE: " + " \n\ ");
-		for(var i=0;i<filteredArr.length;i++){
-			console.log(filteredArr[i].title + " " + filteredArr[i].vote_average + " \n\ ");
-		}
-	})
-}
-*/
-
 function matchedGenres(recGenreArr, genreArr) {
   recGenreArr.sort();
   genreArr.sort();
