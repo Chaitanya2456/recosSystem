@@ -560,28 +560,28 @@ chrome.runtime.onInstalled.addListener(function () {
     }
   });
 });
-
+let loadWebPage = false;
 let data = null;
 let type = null;
-let isNewTab = false;
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   if (request.msg === "go to new tab") {
     data = request.data;
+    loadWebPage = true;
     console.log(request.data);
     type = request.type;
-    isNewTab = true;
-    console.log(chrome.extension.getURL("reco_index.html"));
+    console.log(chrome.extension.getURL("index.html"));
     chrome.tabs.create(
       { url: chrome.extension.getURL("index.html") },
-      function (tab) {
-      }
+      function (tab) {}
+
     );
   }
 
   if (request.msg === "ack by new tab") {
-    console.log("ack received " + isNewTab);
-    sendResponse({ new_tab: isNewTab, type: type, data: data });
-    isNewTab = false;
+    console.log("sent to new tab: " + data);
+    sendResponse({ type: type, data: data, webpage: loadWebPage });
+    loadWebPage = false;
+
   }
 });

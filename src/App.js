@@ -31,8 +31,7 @@ class App extends Component {
     this.getMoviesData();
     this.getTVData();
     this.getWatchedData();
-
-    let watched = this.state.watched;
+     let watched = this.state.watched;
     let movies = this.state.movies;
     let tvs = this.state.tvs;
     chrome.runtime.sendMessage({ msg: "ack by new tab" }, function (response) {
@@ -51,7 +50,6 @@ class App extends Component {
       }
       }.bind(this)
     );
-    
   }
   renderWatching = () => {
     return this.state.watched.length !== 0 ? (
@@ -105,6 +103,10 @@ class App extends Component {
             type: "reco Movie",
             id: recArr[i].title_val.recoData.id,
             data: recArr[i].title_val.recoData,
+            detailsbtn: false,
+            imageBg:
+              "https://image.tmdb.org/t/p/w300" +
+              recArr[i].title_val.recoData.backdrop_path,
           });
         }
         this.setState({ movies });
@@ -125,6 +127,10 @@ class App extends Component {
             type: "reco TV",
             id: recArr[i].title_val.recoData.id,
             data: recArr[i].title_val.recoData,
+            detailsbtn: false,
+            imageBg:
+              "https://image.tmdb.org/t/p/w300" +
+              recArr[i].title_val.recoData.backdrop_path,
           });
         }
         this.setState({ tvs });
@@ -146,6 +152,10 @@ class App extends Component {
             type: recArr[i].title_val.type,
             id: recArr[i].title_val.Data.id,
             data: recArr[i].title_val.Data,
+            detailsbtn: false,
+            imageBg:
+              "https://image.tmdb.org/t/p/w300" +
+              recArr[i].title_val.Data.backdrop_path,
           });
         }
         this.setState({ watched: watched });

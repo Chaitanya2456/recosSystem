@@ -2,12 +2,10 @@
 .slider {
   display: flex;
   position: relative;
-  margin-top: -4px;
-  margin-bottom: -5px;
 
   &__container {
     display: flex;
-    padding: 0 5px;
+    padding: 0 10px;
     transition: transform 300ms ease 100ms;
     z-index: 3;
     width: 100%;
