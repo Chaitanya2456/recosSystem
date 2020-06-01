@@ -563,22 +563,25 @@ chrome.runtime.onInstalled.addListener(function () {
 
 let data = null;
 let type = null;
+let isNewTab = false;
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   if (request.msg === "go to new tab") {
     data = request.data;
     console.log(request.data);
     type = request.type;
+    isNewTab = true;
     console.log(chrome.extension.getURL("reco_index.html"));
     chrome.tabs.create(
-      { url: chrome.extension.getURL("reco_index.html") },
+      { url: chrome.extension.getURL("index.html") },
       function (tab) {
       }
     );
   }
 
   if (request.msg === "ack by new tab") {
-    console.log("sent to new tab: " + data);
-    sendResponse({ type: type, data: data });
+    console.log("ack received " + isNewTab);
+    sendResponse({ new_tab: isNewTab, type: type, data: data });
+    isNewTab = false;
   }
 });

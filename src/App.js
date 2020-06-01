@@ -4,13 +4,16 @@ import "./App.scss";
 /* global chrome */
 class App extends Component {
   constructor(props) {
+    
     super(props);
     this.state = {
       movies: [],
       tvs: [],
       watched: [],
     };
+    
   }
+  
   render() {
     return (
       <div className="app">
@@ -24,9 +27,31 @@ class App extends Component {
     );
   }
   componentDidMount() {
+    
     this.getMoviesData();
     this.getTVData();
     this.getWatchedData();
+
+    let watched = this.state.watched;
+    let movies = this.state.movies;
+    let tvs = this.state.tvs;
+    chrome.runtime.sendMessage({ msg: "ack by new tab" }, function (response) {
+      console.log("sent message from app.js");
+      if(response.new_tab){
+        for(var i=0;i<movies.length;i++){
+          movies[i].image = "https://image.tmdb.org/t/p/w300" + movies[i].data.backdrop_path;
+        }
+        for(var i=0;i<watched.length;i++){
+          watched[i].image = "https://image.tmdb.org/t/p/w300" + watched[i].data.backdrop_path;
+        }
+        for(var i=0;i<tvs.length;i++){
+          tvs[i].image = "https://image.tmdb.org/t/p/w300" + tvs[i].data.backdrop_path;
+        }
+        this.setState({watched: watched, movies: movies, tvs: tvs});
+      }
+      }.bind(this)
+    );
+    
   }
   renderWatching = () => {
     return this.state.watched.length !== 0 ? (
@@ -61,7 +86,10 @@ class App extends Component {
       </Slider>
     ) : null;
   };
+
+
   getMoviesData = () => {
+    
     let movies = this.state.movies;
     chrome.storage.local.get(
       "stored_movie_recos",
@@ -69,10 +97,10 @@ class App extends Component {
         // Gets the titles from local storage
         var recArr = data.stored_movie_recos;
         for (var i = 0; i < recArr.length; i++) {
+          console.log("checking "+this.state.isWebPage+" "+recArr[i].title_val.recoData.backdrop_path);
           movies.push({
             image:
-              "https://image.tmdb.org/t/p/w92" +
-              recArr[i].title_val.recoData.poster_path,
+              "https://image.tmdb.org/t/p/w92"+recArr[i].title_val.recoData.poster_path,
             title: recArr[i].key_title,
             type: "reco Movie",
             id: recArr[i].title_val.recoData.id,
@@ -92,8 +120,7 @@ class App extends Component {
         for (var i = 0; i < recArr.length; i++) {
           tvs.push({
             image:
-              "https://image.tmdb.org/t/p/w92" +
-              recArr[i].title_val.recoData.poster_path,
+            "https://image.tmdb.org/t/p/w92"+recArr[i].title_val.recoData.poster_path,
             title: recArr[i].key_title,
             type: "reco TV",
             id: recArr[i].title_val.recoData.id,
@@ -114,8 +141,7 @@ class App extends Component {
         for (var i = 0; i < recArr.length; i++) {
           watched.push({
             image:
-              "https://image.tmdb.org/t/p/w92" +
-              recArr[i].title_val.Data.poster_path,
+            "https://image.tmdb.org/t/p/w92"+recArr[i].title_val.Data.poster_path,
             title: recArr[i].key_title,
             type: recArr[i].title_val.type,
             id: recArr[i].title_val.Data.id,
