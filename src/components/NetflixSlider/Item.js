@@ -1,7 +1,8 @@
 import React from "react";
 import cx from "classnames";
 import SliderContext from "./context";
-
+import ShowDetailsButton from "./ShowDetailsButton";
+import Mark from "./Mark";
 import "./Item.scss";
 /* global chrome */
 const Item = ({ movie }) => (
@@ -18,6 +19,10 @@ const Item = ({ movie }) => (
           })}
         >
           <img src={movie.image} alt="" />
+          {movie.detailsbtn && (
+            <ShowDetailsButton onClick={() => onSelectSlide(movie)} />
+          )}
+          {isActive && <Mark />}
         </div>
       );
     }}
@@ -26,11 +31,13 @@ const Item = ({ movie }) => (
 
 const handleClick = (movie) => {
   console.log(movie);
-  chrome.runtime.sendMessage({
-    msg: "go to new tab",
-    type: movie.type,
-    data: movie.data,
-  });
+  if (!movie.detailsbtn) {
+    chrome.runtime.sendMessage({
+      msg: "go to new tab",
+      type: movie.type,
+      data: movie.data,
+    });
+  }
 };
 
 export default Item;

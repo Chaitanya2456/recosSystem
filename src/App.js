@@ -27,6 +27,27 @@ class App extends Component {
     this.getMoviesData();
     this.getTVData();
     this.getWatchedData();
+    chrome.runtime.sendMessage(
+      { msg: "ack by new tab" },
+      function (response) {
+        console.log(response);
+        if (response.webpage) {
+          let movies = this.state.movies;
+          for (var i = 0; i < movies.length; i++) {
+            movies[i].detailsbtn = true;
+          }
+          let tvs = this.state.tvs;
+          for (var i = 0; i < tvs.length; i++) {
+            tvs[i].detailsbtn = true;
+          }
+          let watched = this.state.watched;
+          for (var i = 0; i < watched.length; i++) {
+            watched[i].detailsbtn = true;
+          }
+          this.setState({ movies, tvs, watched });
+        }
+      }.bind(this)
+    );
   }
   renderWatching = () => {
     return this.state.watched.length !== 0 ? (
@@ -77,6 +98,10 @@ class App extends Component {
             type: "reco Movie",
             id: recArr[i].title_val.recoData.id,
             data: recArr[i].title_val.recoData,
+            detailsbtn: false,
+            imageBg:
+              "https://image.tmdb.org/t/p/w300" +
+              recArr[i].title_val.recoData.backdrop_path,
           });
         }
         this.setState({ movies });
@@ -98,6 +123,10 @@ class App extends Component {
             type: "reco TV",
             id: recArr[i].title_val.recoData.id,
             data: recArr[i].title_val.recoData,
+            detailsbtn: false,
+            imageBg:
+              "https://image.tmdb.org/t/p/w300" +
+              recArr[i].title_val.recoData.backdrop_path,
           });
         }
         this.setState({ tvs });
@@ -120,6 +149,10 @@ class App extends Component {
             type: recArr[i].title_val.type,
             id: recArr[i].title_val.Data.id,
             data: recArr[i].title_val.Data,
+            detailsbtn: false,
+            imageBg:
+              "https://image.tmdb.org/t/p/w300" +
+              recArr[i].title_val.Data.backdrop_path,
           });
         }
         this.setState({ watched: watched });
