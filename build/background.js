@@ -361,32 +361,6 @@ function fetchMovieRecs(id, mediaTitle) {
     });
 }
 
-//Tried sorting by setting threshold, but did not work in most cases.
-/*
-function fetchMovieRecs(id, genreArr) {
-	var url = "https://api.themoviedb.org/3/movie/"+id+"/recommendations?api_key=ddda0e20c54495aef2d2b5acce042abe&language=en-US&page=1";
-	var threshold = genreArr.length - 2;
-	fetch(url).then(r => r.text()).then(result => {
-		const json = result;
-		const obj = JSON.parse(json);
-		var recArr = obj.results;
-		var filteredArr = [];
-		for(var i=0;i<recArr.length;i++){
-			if(matchedGenres(recArr[i].genre_ids, genreArr)>=threshold){
-				filteredArr.push(recArr[i]);
-			}
-		}
-		filteredArr.sort(function(a, b){
-            return b.vote_average - a.vote_average;
-		});
-		console.log("THE RECOMMENDATIONS ARE: " + " \n\ ");
-		for(var i=0;i<filteredArr.length;i++){
-			console.log(filteredArr[i].title + " " + filteredArr[i].vote_average + " \n\ ");
-		}
-	})
-}
-*/
-
 function matchedGenres(recGenreArr, genreArr) {
   recGenreArr.sort();
   genreArr.sort();
@@ -560,16 +534,17 @@ chrome.runtime.onInstalled.addListener(function () {
     }
   });
 });
-let loadWebPage = false;
+
 let data = null;
 let type = null;
+let loadWebPage = false;
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   if (request.msg === "go to new tab") {
     data = request.data;
     loadWebPage = true;
     console.log(request.data);
     type = request.type;
-     console.log(chrome.extension.getURL("index.html"));
+    console.log(chrome.extension.getURL("index.html"));
     chrome.tabs.create(
       { url: chrome.extension.getURL("index.html") },
       function (tab) {}
@@ -577,7 +552,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   }
 
   if (request.msg === "ack by new tab") {
- console.log("sent to new tab: " + data);
+    console.log("sent to new tab: " + data);
     sendResponse({ type: type, data: data, webpage: loadWebPage });
     loadWebPage = false;
   }
