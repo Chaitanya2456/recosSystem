@@ -1,6 +1,7 @@
 // ***This script runs in the background looking for event triggers***
 
 let mediaSet = new Set();
+let genreMap = new Map();
 
 // This function searches the recent history update for streaming service URLs
 function updateHistory() {
@@ -179,6 +180,10 @@ function storeTitles(title, type, arr) {
   } else {
     chrome.storage.local.get("stored_titles", function (data) {
       // Gets the titles from local storage
+        for(var i=0;i<arr[0].genre_ids.length;i++){
+          arr[0].genre_ids[i] = genreMap.get(arr[0].genre_ids[i]);
+        }
+      
       let recoMap = new Map();
       recoMap.set(title, { type: type, Data: arr[0] });
       for (var i = 0; i < data.stored_titles.length; i++) {
@@ -249,6 +254,15 @@ function fetchTvRecs(id, mediaTitle) {
       recArr.sort(function (a, b) {
         return b.vote_average - a.vote_average; // sorting per rating
       });
+      if(genreMap.size>0){
+        for(var i=0;i<recArr.length;i++){
+          for(var k=0; k<recArr[i].genre_ids.length;k++){
+            console.log(recArr[i].name+" genre id is " + recArr[i].genre_ids[k])
+            recArr[i].genre_ids[k] = genreMap.get(recArr[i].genre_ids[k]);
+            console.log("Now genres are set " + recArr[i].genre_ids[k]);
+          }
+      }
+      }
 
       console.log("THE RECOMMENDATIONS ARE: " + " \n ");
       for (var i = 0; i < recArr.length; i++) {
@@ -261,6 +275,7 @@ function fetchTvRecs(id, mediaTitle) {
         for (var i = 0; i < recArr.length; i++) {
           if (mediaSet.has(recArr[i].name)) continue;
           mediaSet.add(recArr[i].name);
+          
           recoMap.set(recArr[i].name, {
             recoFor: mediaTitle,
             recoData: recArr[i],
@@ -326,6 +341,11 @@ function fetchMovieRecs(id, mediaTitle) {
         for (var i = 0; i < recArr.length; i++) {
           if (mediaSet.has(recArr[i].title)) continue;
           mediaSet.add(recArr[i].title);
+          if(genreMap.size>0){
+            for(var k=0; k<recArr[i].genre_ids.length;k++){
+              recArr[i].genre_ids[k] = genreMap.get(recArr[i].genre_ids[k]);
+            }
+          }
           recoMap.set(recArr[i].title, {
             recoFor: mediaTitle,
             recoData: recArr[i],
@@ -461,31 +481,38 @@ chrome.history.onVisited.addListener(function (result) {
   console.log("HISTORY UPDATED");
   updateWatchHistory();
   chrome.storage.local.get("tvGenresList", function (data) {
-    if (typeof data.tvGenresList === "undefined") {
+    if (genreMap.size<27) {
       var url =
         "https://api.themoviedb.org/3/genre/tv/list?api_key=ddda0e20c54495aef2d2b5acce042abe&language=en-US";
       fetch(url)
         .then((r) => r.text())
         .then((result) => {
           const obj = JSON.parse(result);
+          for(var i=0;i<obj.genres.length;i++){
+             genreMap.set(obj.genres[i].id, obj.genres[i].name);
+          }
           chrome.storage.local.set({ tvGenresList: obj.genres }, function () {
             console.log("Stored the genres of Tv series");
             console.log(obj.genres);
           });
         });
     } else {
-      console.log("already stored TV genres");
+      console.log("already stored TV genres" + data.tvGenresList[0].id);
     }
   });
 
   chrome.storage.local.get("movieGenresList", function (data) {
-    if (typeof data.movieGenresList === "undefined") {
+    if (genreMap.size<27) {
       var url =
         "https://api.themoviedb.org/3/genre/movie/list?api_key=ddda0e20c54495aef2d2b5acce042abe&language=en-US";
       fetch(url)
         .then((r) => r.text())
         .then((result) => {
           const obj = JSON.parse(result);
+          for(var i=0;i<obj.genres.length;i++){
+            genreMap.set(obj.genres[i].id, obj.genres[i].name);
+         }
+         console.log("Size of genre map is " + genreMap.size);
           chrome.storage.local.set(
             { movieGenresList: obj.genres },
             function () {

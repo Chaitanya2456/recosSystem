@@ -1,7 +1,7 @@
 .content {
     position: relative;
     height: 37vw;
-    margin-top: -40px;
+    margin-top: -25px;
 
     &__background,
     &__background__shadow,
@@ -67,6 +67,33 @@
         color: #999;
         margin-top: 20px;
         max-width: 500px;
+        margin-bottom: 20px;
+    }
+
+    &__platform {
+        position: absolute;
+        bottom: 50px;
+        font-size: 24px;
+        font-weight: 300;
+        color: azure;
+
+        &__logos {
+            display: flex;
+            padding: 15px 20px;
+        }
+
+        &__logos img {
+            width: 55px;
+            height: 55px;
+            margin-right: 40px;
+        }
+    }
+
+    &__rating {
+        margin-bottom: 10px;
+        color: rgb(219, 202, 202);
+        font-size: 20px;
+        font-weight: 500;
     }
 
     &__close {
@@ -80,4 +107,5 @@
         top: 30px;
         right: 30px;
     }
+
 }
